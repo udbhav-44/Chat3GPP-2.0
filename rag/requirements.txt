@@ -1,0 +1,6 @@
+pathway[all]==0.20.0
+fastapi
+uvicorn
+openai
+python-dotenv
+gunicorn

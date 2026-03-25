@@ -1,0 +1,107 @@
+[
+    {
+        "name": "web_search",
+        "docstring": "If you do not know about an entity, perform a web search using the Google search engine. This should be followed by web scraping the most relevant page to get a detailed response.",
+        "parameters": {
+            "query": "str"
+        },
+        "output": {
+            "type": "List[Dict]",
+            "description": "A list of search results containing relevant information about the query."
+        }
+    },
+    {
+        "name": "get_wikipedia_summary",
+        "docstring": "Fetches a summary from Wikipedia based on a search query.",
+        "parameters": {
+            "query": "str"
+        },
+        "output": {
+            "type": "str",
+            "description": "Summary of the Wikipedia page."
+        }
+    },
+    {
+        "name": "arxiv_fetch",
+        "docstring": "Use this tool to dynamically fetch research papers from arXiv based on the query provided. The papers will be saved in the temp_rag_space for indexing and further use.",
+        "parameters": {
+            "query": "str"
+        },
+        "output": {
+            "type": "Dict",
+            "description": "Metadata of fetched papers, including title, authors, summary, and PDF link."
+        }
+    },
+    {
+        "name": "web_scrape",
+        "docstring": "Scrape a web page using links found using web search to provide a detailed response. Input should be the URL of the page to scrape.",
+        "parameters": {
+            "url": "str",
+            "query": "str"
+        },
+        "output": {
+            "type": "Union[Dict, str]",
+            "description": "The scraped data as JSON if successful, or the URL if scraping fails."
+        }
+    },
+    {
+        "name": "simple_query_documents",
+        "docstring": "Query documents using a Retrieval-Augmented Generation (RAG) endpoint. This should be the first choice before performing a web search.",
+        "parameters": {
+            "prompt": "str"
+        },
+        "output": {
+            "type": "Dict",
+            "description": "The JSON response from the RAG endpoint, containing the retrieved information and generated answer."
+        }
+    },
+    {
+        "name": "retrieve_documents",
+        "docstring": "Extract information from the provided internal document. This should be the first tool to call for accurate and verified information.",
+        "parameters": {
+            "prompt": "str"
+        },
+        "output": {
+            "type": "str",
+            "description": "The retrieved information formatted as text."
+        }
+    },
+    {
+        "name": "query_documents",
+        "docstring": "Query documents using a Retrieval-Augmented Generation (RAG) endpoint. This should be the first choice before performing a web search.",
+        "parameters": {
+            "prompt": "str",
+            "source": "str"
+        },
+        "output": {
+            "type": "Dict",
+            "description": "The JSON response from the RAG endpoint, containing the retrieved information and generated answer."
+        }
+    },
+    {
+        "name": "web_search_simple",
+        "docstring": "Perform a web search using the Google search engine.",
+        "parameters": {
+            "query": "str"
+        },
+        "output": {
+            "type": "List[Dict]",
+            "description": "Search results with basic details about the query."
+        }
+    },
+    {
+
+        "name": "search_and_generate",
+        "docstring": "Query the Graph-3GPP for all communication related queries to get the Relevant Documents for the Query and Returns a tuple of (DataFrame of Resultant Documents or None, formatted response string with the AI Ans). meeting_id is optional and can be used to filter documents by meeting.",
+        "parameters": {
+            "query_str": "str",
+            "meeting_id": "Optional[str]"
+        },
+        "output": {
+            "type": "Tuple[Optional[Any], str]",
+            "description": "A tuple containing a DataFrame of results (or None) and a formatted response string."
+        }
+    }
+
+
+]

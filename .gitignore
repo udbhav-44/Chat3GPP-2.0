@@ -1,0 +1,11 @@
+*/__pycache__
+rag/user_uploads
+rag/uploads
+rag/persistence_data
+rag/temp_rag_space
+rag/logs
+rag/chat_uploads
+pipeline/output
+pipeline/rag
+*.log
+*.env

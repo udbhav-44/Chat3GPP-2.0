@@ -1,0 +1,18 @@
+node_modules
+node_modules/
+*.csv
+../*.csv
+.../*.csv
+.env
+ui
+# .gitignore
+__pycache__
+companies.json
+pathway.html
+pathway_report.md
+auth.db
+feedback_log.jsonl
+.env
+dist/
+build/
+output

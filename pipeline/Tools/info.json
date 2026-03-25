@@ -1,0 +1,85 @@
+[
+    {
+        "name": "web_search",
+        "docstring": "If you do not know about an entity, perform a web search using the Google search engine. This should be followed by web scraping the most relevant page to get a detailed response.",
+        "parameters": {
+            "query": "str"
+        },
+        "output": {
+            "type": "List[Dict]",
+            "description": "A list of search results containing relevant information about the query."
+        }
+    },
+    {
+        "name": "web_scrape",
+        "docstring": "Scrape a web page using links found using web search to provide a detailed response. Input should be the URL of the page to scrape.",
+        "parameters": {
+            "url": "str",
+            "query": "str"
+        },
+        "output": {
+            "type": "Union[Dict, str]",
+            "description": "The scraped data as JSON if successful, or the URL if scraping fails."
+        }
+    },
+    {
+        "name": "simple_query_documents",
+        "docstring": "Query user-uploaded documents using a RAG endpoint. Use only when the user has uploads; secondary to search_and_generate for 3GPP sources.",
+        "parameters": {
+            "prompt": "str"
+        },
+        "output": {
+            "type": "Dict",
+            "description": "The JSON response from the RAG endpoint, containing the retrieved information and generated answer."
+        }
+    },
+    {
+        "name": "retrieve_documents",
+        "docstring": "Extract information from user-uploaded documents. Use only when the user has uploads; otherwise skip.",
+        "parameters": {
+            "prompt": "str"
+        },
+        "output": {
+            "type": "str",
+            "description": "The retrieved information formatted as text."
+        }
+    },
+    {
+        "name": "query_documents",
+        "docstring": "Query a specific user-provided document via RAG. Use only when the user has uploads; otherwise skip.",
+        "parameters": {
+            "prompt": "str",
+            "source": "str"
+        },
+        "output": {
+            "type": "Dict",
+            "description": "The JSON response from the RAG endpoint, containing the retrieved information and generated answer."
+        }
+    },
+    {
+        "name": "web_search_simple",
+        "docstring": "Perform a web search using the Google search engine.",
+        "parameters": {
+            "query": "str"
+        },
+        "output": {
+            "type": "List[Dict]",
+            "description": "Search results with basic details about the query."
+        }
+    },
+    {
+
+        "name": "search_and_generate",
+        "docstring": "Primary tool for refutable knowledge directly from 3GPP. Queries Graph-3GPP and returns (DataFrame of results or None, formatted response string). meeting_id is optional.",
+        "parameters": {
+            "query_str": "str",
+            "meeting_id": "Optional[str]"
+        },
+        "output": {
+            "type": "Tuple[Optional[Any], str]",
+            "description": "A tuple containing a DataFrame of results (or None) and a formatted response string."
+        }
+    }
+
+
+]

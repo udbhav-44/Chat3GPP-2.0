@@ -1,0 +1,20 @@
+groups:
+  - name: basic-health
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance down"
+          description: "{{ $labels.instance }} is not responding."
+
+      - alert: WebsiteDown
+        expr: probe_success == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Website probe failed"
+          description: "Probe failed for {{ $labels.instance }}."

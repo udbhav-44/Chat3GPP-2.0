@@ -1,0 +1,10 @@
+python-dotenv
+openai
+markdown_pdf
+flask
+flask_cors
+authlib
+pyjwt
+yfinance
+google-generativeai
+grip

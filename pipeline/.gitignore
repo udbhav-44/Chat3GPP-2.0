@@ -1,0 +1,16 @@
+.env
+pipe
+Agents/__pycache__
+Agents/LATS/__pycache__
+__pycache__
+temp_rag_space
+error_logs.log
+error.log
+assets
+testing.py
+Results.csv
+response-withCharts.md
+ProcessLogs.md
+conciseResponse.md
+Graph.json
+

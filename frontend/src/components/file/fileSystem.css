@@ -1,0 +1,240 @@
+.file-explorer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: var(--ink);
+}
+
+.file-explorer h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.file-explorer__subtitle {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.file-explorer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.file-explorer__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-explorer__input {
+  display: none;
+}
+
+.file-explorer__button {
+  border: 1px solid transparent;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.file-explorer__button.primary {
+  background: linear-gradient(135deg, #75d91f, #1c2a44);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.15);
+}
+
+.file-explorer__button.ghost {
+  background: transparent;
+  border-color: rgba(148, 163, 184, 0.4);
+  color: var(--ink);
+}
+
+.file-explorer__button.danger {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.file-explorer__button:hover {
+  transform: translateY(-1px);
+}
+
+.file-explorer__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+}
+
+.file-explorer__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.file-explorer__search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.file-explorer__search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  color: var(--ink);
+}
+
+.file-explorer__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+}
+
+.file-row__name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.file-row__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(117, 217, 31, 0.15);
+  color: #1c2a44;
+}
+
+.file-row__title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-row__meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.file-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-row__confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-explorer__state,
+.file-explorer__empty {
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px dashed rgba(148, 163, 184, 0.5);
+}
+
+.file-explorer__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-explorer__empty-icon {
+  font-size: 28px;
+  color: rgba(148, 163, 184, 0.8);
+}
+
+.file-explorer__empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.file-explorer__empty-subtitle {
+  font-size: 0.85rem;
+  max-width: 320px;
+}
+
+.file-explorer__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 720px) {
+  .file-explorer__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .file-explorer__actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .file-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .file-row__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

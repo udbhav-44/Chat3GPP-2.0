@@ -44,8 +44,13 @@ module.exports = {
     {
       name: "rag-pw-userkb",
       cwd: ragDir,
-      script: "pw_userkb.py",
+      script: "start.py",
       interpreter: ragPython,
+      env: {
+        VENV_PYTHON: condaPython,
+        PATHWAY_BIN: condaPathway,
+        PW_SCRIPT: "pw_userkb.py",
+      },
       autorestart: true,
       max_restarts: 10,
       restart_delay: 2000,

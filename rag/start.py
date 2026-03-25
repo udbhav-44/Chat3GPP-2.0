@@ -5,7 +5,8 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SCRIPT_PATH = os.path.join(BASE_DIR, "pw_new.py")
+SCRIPT_NAME = os.getenv("PW_SCRIPT", "pw_new.py")
+SCRIPT_PATH = os.path.join(BASE_DIR, SCRIPT_NAME)
 VENV_PYTHON = os.getenv("VENV_PYTHON", os.path.join(BASE_DIR, "test", "bin", "python3"))
 PATHWAY_BIN = os.getenv("PATHWAY_BIN", os.path.join(BASE_DIR, "test", "bin", "pathway"))
 THREADS = os.getenv("PW_NEW_THREADS", "8")

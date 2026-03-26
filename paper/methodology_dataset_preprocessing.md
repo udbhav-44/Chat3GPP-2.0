@@ -153,12 +153,6 @@ This multi-branch design is analogous in spirit to the hybrid BM25 + graph trave
 
 ---
 
-## F. Retrieval-Augmented Generation
-
-Documents retrieved by the graph query are passed to a Pathway-based DocumentStore [CITE: Pathway] indexed with **voyage-3-large** embeddings (1024-dimensional; 32K context window) for dense retrieval within the downloaded document collection. Before passing context to the generator, retrieved passages are optionally reranked using **VoyageAI rerank-2** [CITE: VoyageAI rerank-2 2024], a cross-encoder model that improves retrieval accuracy by 13.89% over the underlying embedding model on held-out technical documentation benchmarks. The final ranked context (up to 10 passages, maximum 5,000 output tokens) is passed to **DeepSeek-Chat** for answer generation with temperature 0.3 and top-p 0.9, with a system prompt instructing the model to perform comparative and critical analysis, cite document names and page numbers, and flag conflicting information across sources.
-
----
-
 ## References
 
 [CITE: Lewis 2020] P. Lewis et al., "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks," *Advances in Neural Information Processing Systems (NeurIPS)*, 2020. arXiv:2005.11401.
@@ -191,12 +185,6 @@ Documents retrieved by the graph query are passed to a Pathway-based DocumentSto
 
 [CITE: REBEL 2021] P. Cabot and R. Navigli, "REBEL: Relation Extraction By End-to-end Language generation," *EMNLP Findings*, 2021.
 
-[CITE: VoyageAI voyage-3-large 2025] VoyageAI, "voyage-3-large: State-of-the-Art General Embedding Model," blog.voyageai.com, January 7, 2025.
-
-[CITE: VoyageAI rerank-2 2024] VoyageAI, "rerank-2: Superior Reranking Model," blog.voyageai.com, September 30, 2024.
-
 [CITE: Baron 2025] J. Baron, M. Bergallo, and M. Gamarra, "A Text-Based Analysis of Technical Contributions to 3GPP," SSRN:5369199, 2025.
 
 [CITE: Neo4j GraphRAG 2024] Neo4j, "Hybrid Retrieval for GraphRAG Applications Using the GraphRAG Python Package," neo4j.com/blog, 2024.
-
-[CITE: Pathway] Pathway, *Pathway: Python Data Processing Framework for Real-Time Applications*, pathway.com.

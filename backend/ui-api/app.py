@@ -21,7 +21,12 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", os.getenv("JWT_SECRET", "change-me"))
-CORS(app)
+_CORS_ORIGINS = [
+    o.strip()
+    for o in os.getenv("CORS_ORIGINS", os.getenv("FRONTEND_URL", "http://localhost:6666")).split(",")
+    if o.strip()
+]
+CORS(app, origins=_CORS_ORIGINS, supports_credentials=True)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PIPELINE_ROOT = os.path.abspath(
@@ -816,8 +821,7 @@ def convert_to_pdf():
         return {"error": "Report generation is disabled."}, 503
     data = request.get_json()
     markdown_content = data.get('content', '')
-    request_id = data.get("request_id")
-    print(f"Received markdown content: {markdown_content}")
+    request_id = _sanitize_thread_id(data.get("request_id"))
     markdown_content = str(markdown_content)
     output_base = f"pathway_{request_id}" if request_id else "pathway"
     os.makedirs(REPORTS_DIR, exist_ok=True)
@@ -833,7 +837,7 @@ def download_pdf():
         return {"error": "Unauthorized"}, 401
     if not WRITE_UI_ARTIFACTS:
         return {"error": "Report downloads are disabled."}, 503
-    request_id = request.args.get("request_id")
+    request_id = _sanitize_thread_id(request.args.get("request_id"))
     output_base = f"pathway_{request_id}" if request_id else "pathway"
     output_file = os.path.join(REPORTS_DIR, f"{output_base}.html")
 

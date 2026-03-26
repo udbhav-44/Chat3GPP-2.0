@@ -19,12 +19,14 @@ load_dotenv()
 app = FastAPI()
 logging.basicConfig(level=logging.INFO)
 
-# CORS configuration
+# CORS: restrict to configured frontend origin(s); comma-separated list supported.
+_raw_cors_origins = os.getenv("CORS_ORIGINS", os.getenv("FRONTEND_URL", "http://localhost:6666"))
+_CORS_ORIGINS = [o.strip() for o in _raw_cors_origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=_CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],  
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 

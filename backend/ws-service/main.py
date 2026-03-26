@@ -50,7 +50,6 @@ from Agents.DrafterAgent import drafterAgent_vanilla, drafterAgent_rag
 from Agents.ConciseAnsAgent import conciseAns_vanilla
 from Agents.RAG_Agent import ragAgent
 from Agents.LATS.OldfinTools import *
-from TopicalGuardrails import apply_all_guardrails
 from langchain_core.messages import HumanMessage, SystemMessage
 from LLMs import get_llm
 import asyncio
@@ -367,21 +366,6 @@ async def mainBackend(
             return tool_names
         return [tool for tool in tool_names if tool not in web_tool_names]
 
-    # Apply Topical Guardrails
-    logger.info("Applying topical guardrails")
-    if should_abort(cancel_event):
-        return
-    passed, fail_reasons = await run_blocking(apply_all_guardrails, query, model=model, provider=provider)
-    if not passed:
-        logger.warning("Query failed guardrails: %s", fail_reasons)
-        reason_str = "\n".join([f"- {v}" for k, v in fail_reasons.items()])
-        await send_json({
-            "type": "response",
-            "response": f"I cannot process this query. It violates our safety guidelines:\n{reason_str}",
-            "thread_id": thread_id,
-            "response_id": response_id,
-        })
-        return
 
     if not IS_RAG:
         logger.info("Running without internal docs context")

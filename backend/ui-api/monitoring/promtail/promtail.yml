@@ -31,3 +31,87 @@ scrape_configs:
         labels:
           job: docker
           __path__: /var/lib/docker/containers/*/*-json.log
+
+  # PM2-managed service logs — covers all 7 backend services
+  - job_name: pm2
+    pipeline_stages:
+      - multiline:
+          firstline: '^\d{4}-\d{2}-\d{2}'
+          max_wait_time: 3s
+      - regex:
+          expression: '^(?P<timestamp>\S+\s\S+)\s+(?P<level>\w+)\s+(?P<logger>\S+)\s+(?P<message>.*)'
+      - labels:
+          level:
+          logger:
+      - timestamp:
+          source: timestamp
+          format: '2006-01-02 15:04:05'
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: pm2
+          service: pipeline-ws
+          __path__: /home/labserver/.pm2/logs/pipeline-ws-out.log
+      - targets: [localhost]
+        labels:
+          job: pm2
+          service: pipeline-ws-err
+          __path__: /home/labserver/.pm2/logs/pipeline-ws-error.log
+      - targets: [localhost]
+        labels:
+          job: pm2
+          service: agent-ws
+          __path__: /home/labserver/.pm2/logs/agent-ws-out.log
+      - targets: [localhost]
+        labels:
+          job: pm2
+          service: agent-ws-err
+          __path__: /home/labserver/.pm2/logs/agent-ws-error.log
+      - targets: [localhost]
+        labels:
+          job: pm2
+          service: ui-flask
+          __path__: /home/labserver/.pm2/logs/ui-flask-out.log
+      - targets: [localhost]
+        labels:
+          job: pm2
+          service: ui-flask-err
+          __path__: /home/labserver/.pm2/logs/ui-flask-error.log
+      - targets: [localhost]
+        labels:
+          job: pm2
+          service: rag-http
+          __path__: /home/labserver/.pm2/logs/rag-http-out.log
+      - targets: [localhost]
+        labels:
+          job: pm2
+          service: rag-server
+          __path__: /home/labserver/.pm2/logs/rag-server-out.log
+      - targets: [localhost]
+        labels:
+          job: pm2
+          service: rag-pw-new
+          __path__: /home/labserver/.pm2/logs/rag-pw-new-out.log
+      - targets: [localhost]
+        labels:
+          job: pm2
+          service: rag-pw-userkb
+          __path__: /home/labserver/.pm2/logs/rag-pw-userkb-out.log
+
+  # Pathway-specific log files (written by pw_new.py and pw_userkb.py)
+  - job_name: pathway
+    pipeline_stages:
+      - multiline:
+          firstline: '^\d{4}-\d{2}-\d{2}'
+          max_wait_time: 3s
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: pathway
+          service: pw-new
+          __path__: /git_folder/udbhav/code/Chat3GPP/rag/logs/pw_new.log
+      - targets: [localhost]
+        labels:
+          job: pathway
+          service: pw-userkb
+          __path__: /git_folder/udbhav/code/Chat3GPP/rag/logs/pw_userkb.log

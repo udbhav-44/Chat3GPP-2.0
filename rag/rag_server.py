@@ -90,7 +90,7 @@ def rerank_documents(query: str, documents: List[Dict[str, Any]]) -> List[Dict[s
     """
     if not documents:
         logger.info("No relevant documents retrieved for reranking.")
-        return [{"message": "No relevant documents retreived from user input. Ask the user to provide relevant documents"}]
+        return []
     if not RERANK_ENABLED or not VOYAGE_API_KEY:
         logger.info("Reranking disabled or missing VoyageAI key. Using original document order.")
         return documents

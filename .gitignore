@@ -15,3 +15,9 @@ pipeline/rag
 *.db
 *.sqlite
 *.sqlite3
+
+# Pathway runtime state (regenerated on startup)
+rag/state/
+
+# Neo4j database dumps (large binary — store externally)
+data/neo4j-backups/*.dump

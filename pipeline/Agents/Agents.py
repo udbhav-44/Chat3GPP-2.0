@@ -5,8 +5,17 @@ functions:
     - genContext_andRunLATS : generates the context for the agent based on the dependencies and runs the LATS pipeline for the agent
     - Agent : class to create an agent object for each task in the LATS pipeline
 """
-import google.generativeai as genai
-from Agents.LATS.OldfinTools import *
+from Agents.LATS.OldfinTools import (
+    search_and_generate,
+    web_search,
+    web_search_simple,
+    web_scrape,
+    retrieve_documents,
+    simple_query_documents,
+    query_documents,
+    has_user_uploads,
+    get_current_user_id,
+)
 from datetime import datetime
 import os
 from langchain.globals import set_verbose
@@ -14,6 +23,19 @@ set_verbose(os.getenv("LANGCHAIN_VERBOSE", "false").lower() == "true")
 import logging
 from Agents.LATS.Solve_subquery import SolveSubQuery
 logger = logging.getLogger(__name__)
+
+# Explicit allowlist — tool names from the planner are resolved against this dict
+# only. This prevents globals() lookup which would allow arbitrary code execution
+# if a planner ever returned an unexpected tool name.
+_TOOL_REGISTRY: dict = {
+    "search_and_generate": search_and_generate,
+    "web_search": web_search,
+    "web_search_simple": web_search_simple,
+    "web_scrape": web_scrape,
+    "retrieve_documents": retrieve_documents,
+    "simple_query_documents": simple_query_documents,
+    "query_documents": query_documents,
+}
 
 class Agent:
     def __init__(
@@ -59,7 +81,11 @@ class Agent:
                 "query_documents",
             }:
                 continue
-            tl_lis.append(globals()[function_name])
+            tool_fn = _TOOL_REGISTRY.get(function_name)
+            if tool_fn is None:
+                logger.warning("Unknown tool '%s' requested by planner — skipping.", function_name)
+                continue
+            tl_lis.append(tool_fn)
         self.tools_list = tl_lis[:]
         
         if self.state == 'RAG' and has_uploads:

@@ -199,11 +199,16 @@ GPT4o_mini_Complex = get_llm_for_role("complex", temperature=0.6, top_p=0.7)
 GPT4o_mini_GuardRails = get_llm_for_role("guardrails", temperature=0.2, top_p=0.1)
 
 
+_MESSAGE_HISTORY_MAX = int(os.getenv("LLM_HISTORY_MAX_SESSIONS", "200"))
 _message_histories: dict[str, ChatMessageHistory] = {}
 
 
 def _get_message_history(session_id: str) -> ChatMessageHistory:
     if session_id not in _message_histories:
+        if len(_message_histories) >= _MESSAGE_HISTORY_MAX:
+            # Evict the oldest entry (insertion-order guaranteed in Python 3.7+)
+            oldest = next(iter(_message_histories))
+            del _message_histories[oldest]
         _message_histories[session_id] = ChatMessageHistory()
     return _message_histories[session_id]
 

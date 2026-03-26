@@ -45,46 +45,36 @@ const ContextProvider = (props) => {
 
 
 
-	// Helper function to update displayed characters and check if all have been shown
-	const delayPara = (index, nextWord) => {
-		const renderToken = renderTokenRef.current;
-		setTimeout(function () {
-			if (renderTokenRef.current !== renderToken) {
-				return;
+	// Reveal text incrementally using a single requestAnimationFrame loop.
+	// charsPerFrame is scaled so the animation completes in ~2 s regardless of length.
+	const _animateText = (text, setter, onDone) => {
+		const currentToken = renderTokenRef.current;
+		const totalLen = text.length;
+		totalCharsRef.current = totalLen;
+		displayedCharsRef.current = 0;
+
+		if (totalLen === 0) {
+			onDone && onDone();
+			return;
+		}
+
+		// Target ~2 s at 60 fps; minimum 4 chars/frame so short responses are instant.
+		const TARGET_FRAMES = 120; // 2 s × 60 fps
+		const charsPerFrame = Math.max(4, Math.ceil(totalLen / TARGET_FRAMES));
+
+		let pos = 0;
+		const tick = () => {
+			if (renderTokenRef.current !== currentToken) return; // render cancelled
+			pos = Math.min(pos + charsPerFrame, totalLen);
+			displayedCharsRef.current = pos;
+			setter(text.slice(0, pos));
+			if (pos < totalLen) {
+				requestAnimationFrame(tick);
+			} else {
+				onDone && onDone();
 			}
-			setResultData((prev) => prev + nextWord); // Append nextWord to resultData
-			displayedCharsRef.current += 1; 
-			// Check if all characters are displayed
-			if (displayedCharsRef.current === totalCharsRef.current) {
-				// All characters are shown, so set downloadData to true
-				console.log('All characters displayed. Setting downloadData to true');
-				setDownloadData(true);
-				// setAgent(false);
-				resp.current = false;
-			}
-		}, 0.5 * index); // Slower pace for better visibility
-	};
-	const delayParaAgent = (index, nextWord) => {
-		const renderToken = renderTokenRef.current;
-		setTimeout(function () {
-			if (renderTokenRef.current !== renderToken) {
-				return;
-			}
-			setAgentData((prev) => prev + nextWord); // Append nextWord to resultData
-			displayedCharsRef.current += 1;
-	
-			// Check if all characters are displayed for this batch
-			if (displayedCharsRef.current === totalCharsRef.current) {
-				console.log('All characters displayed for the current batch.');
-				if (pendingDataRef.current.length > 0) {
-					// Start rendering the next batch if there's more pending data
-					renderBatch();
-				} else {
-					console.log('All data rendered. Setting downloadData to true.');
-					// setDownloadData(true);
-				}
-			}
-		}, 1 * index); // Adjust delay for desired pacing
+		};
+		requestAnimationFrame(tick);
 	};
 
 	// Function to reset the states for a new chat
@@ -321,16 +311,27 @@ const ContextProvider = (props) => {
 	};
 
 	const renderBatch = () => {
-		const newChunk = pendingDataRef.current.shift(); // Get the next chunk
+		const newChunk = pendingDataRef.current.shift();
 		if (!newChunk) return;
-	
-		totalCharsRef.current += newChunk.length; // Update the total characters count
-		const newResponseArray = newChunk.split("");
-	
-		for (let i = 0; i < newResponseArray.length; i++) {
-			const nextWord = newResponseArray[i];
-			delayParaAgent(i, nextWord + "");
-		}
+		// Capture prefix length before this chunk so we can animate only the new portion
+		setAgentData((current) => {
+			const base = current;
+			const currentToken = renderTokenRef.current;
+			const charsPerFrame = Math.max(4, Math.ceil(newChunk.length / 120));
+			let pos = 0;
+			const tick = () => {
+				if (renderTokenRef.current !== currentToken) return;
+				pos = Math.min(pos + charsPerFrame, newChunk.length);
+				setAgentData(base + newChunk.slice(0, pos));
+				if (pos < newChunk.length) {
+					requestAnimationFrame(tick);
+				} else if (pendingDataRef.current.length > 0) {
+					renderBatch();
+				}
+			};
+			requestAnimationFrame(tick);
+			return base; // initial render; RAF will update it
+		});
 	};
 
 	// Function to handle sending the prompt
@@ -352,22 +353,11 @@ const ContextProvider = (props) => {
 		}
 
 		try {
-			let responseArray = response.split("**");
-			let newResponse = "";
-			for (let i = 0; i < responseArray.length; i++) {
-				if (i === 0 || i % 2 !== 1) {
-					newResponse += responseArray[i];
-				} else {
-					newResponse += "<b>" + responseArray[i] + "</b>";
-				}
-			}
-			let newResponse2 = newResponse.split("*").join("<br/>");
-			totalCharsRef.current = newResponse2.length; // Set the total chars to be displayed
-			let newResponseArray = newResponse2.split("");
-			for (let i = 0; i < newResponseArray.length; i++) {
-				const nextWord = newResponseArray[i];
-				delayPara(i, nextWord + "");
-			}
+			const text = String(response || "");
+			_animateText(text, setResultData, () => {
+				setDownloadData(true);
+				resp.current = false;
+			});
 		} catch (error) {
 			console.error("Error while running chat:", error);
 		} finally {
@@ -376,67 +366,33 @@ const ContextProvider = (props) => {
 		}
 	};
 
-	// Function to render a pre-existing response
-	const onRender = async (data) => {
+	// Animate the full response text using RAF — no thousands of timers.
+	// Passes raw markdown directly; ReactMarkdown renders it correctly.
+	const onRender = (data) => {
 		setResultData("");
-		let response = data;
-		try {
-			let responseArray = response.split("**");
-			let newResponse = "";
-			for (let i = 0; i < responseArray.length; i++) {
-				if (i === 0 || i % 2 !== 1) {
-					newResponse += responseArray[i];
-				} else {
-					newResponse += "<b>" + responseArray[i] + "</b>";
-				}
+		setLoading(false);
+		setInput("");
+		const text = String(data || "");
+		startRenderCycle();
+		_animateText(
+			text,
+			setResultData,
+			() => {
+				setDownloadData(true);
+				resp.current = false;
 			}
-			let newResponse2 = newResponse.split("*").join("<br/>");
-			totalCharsRef.current = newResponse2.length; // Set the total chars to be displayed
-			let newResponseArray = newResponse2.split("");
-			for (let i = 0; i < newResponseArray.length; i++) {
-				const nextWord = newResponseArray[i];
-				delayPara(i, nextWord + "");
-				
-			}
-
-			
-			setTotalDisplayedCharsRef(0);
-			displayedCharsRef.current = 0;
-		} catch (error) {
-			console.error("Error while running chat:", error);
-		} finally {
-			// Check if all characters have been displayed
-			setLoading(false);
-			setInput("");
-		}
+		);
 	};
 
-	const onRenderAgent = async (data) => {
-		try {
-			// Split incoming data into formatted chunks
-			const responseArray = data.split("**");
-			let newResponse = "";
-			for (let i = 0; i < responseArray.length; i++) {
-				if (i === 0 || i % 2 !== 1) {
-					newResponse += responseArray[i];
-				} else {
-					newResponse += "<b>" + responseArray[i] + "</b>";
-				}
-			}
-			const formattedResponse = newResponse.split("*").join("<br/>");
-	
-			// Add the new chunk to the pending queue
-			pendingDataRef.current.push(formattedResponse);
-	
-			// Start rendering if no other batch is currently being processed
-			if (displayedCharsRef.current === totalCharsRef.current) {
-				renderBatch();
-			}
-		} catch (error) {
-			console.error("Error while rendering data:", error);
-		} finally {
-			setLoading(false);
-			setInput("");
+	const onRenderAgent = (data) => {
+		setLoading(false);
+		setInput("");
+		const chunk = String(data || "");
+		if (!chunk) return;
+		// Queue chunk and trigger batch render
+		pendingDataRef.current.push(chunk);
+		if (displayedCharsRef.current === totalCharsRef.current) {
+			renderBatch();
 		}
 	};
 

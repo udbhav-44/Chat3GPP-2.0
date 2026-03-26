@@ -23,6 +23,8 @@ const buildTokenQuery = () => {
   return `token=${encodeURIComponent(token)}`;
 };
 
+// NOTE: <img> elements cannot send Authorization headers, so the JWT token must
+// be passed as a query param here. All other requests use the Authorization header.
 export const getChatImageUrl = (threadId, filename) => {
   if (!threadId || !filename) {
     return "";

@@ -4,7 +4,6 @@ import Main from "./components/main/Main";
 import Sidebar from "./components/sidebar/Sidebar";
 import GraphBar from "./components/graphbar/Graphbar";
 import ResultsBar from "./components/resultsbar/ResultsBar";
-import ContextProvider from "./context/Context";
 import { getCurrentUser } from "./services/auth";
 import { clearToken, getToken, setToken } from "./services/authToken";
 
@@ -146,7 +145,7 @@ const App = () => {
   };
 
   return (
-    <ContextProvider>
+    <>
       <Sidebar onLogout={handleLogout} />
       <Main user={authState.user} />
       <ResultsBar
@@ -163,8 +162,7 @@ const App = () => {
         drawerWidth={graphDrawerWidth}
         onResize={handleGraphResize}
       />
-      {/* <Popup /> */}
-    </ContextProvider>
+    </>
   );
 };
 

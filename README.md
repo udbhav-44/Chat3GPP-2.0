@@ -296,7 +296,10 @@ If endpoints are unreachable or the pipeline hangs, observe the following patter
 
 ## Data Management & Backups
 
-- **Neo4j Offline Backups:** Never manually zip the active database. Always execute online backups using `neo4j-admin backup --backup-dir data/neo4j-backups --database neo4j`.
+- **Neo4j Offline Backups (Community Edition):** Since the Neo4j Community Edition does not support live concurrent backups, you must briefly pause the database engine to safely execute a clean state dump. **Never** manually zip or copy the active database directory! Instead, perform the following sequence:
+  1. `sudo systemctl stop neo4j`
+  2. `neo4j-admin database dump neo4j --to-path=data/neo4j-backups`
+  3. `sudo systemctl start neo4j`
 - **User Uploads (RAG):** RAG embeds directly out of directories at `rag/user_uploads`. Backup this flat-file directory concurrently with `postgres` to ensure embeddings sync properly on restore.
 
 ---
